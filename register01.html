@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2025陽明牙醫雙北聯合尾牙抽獎券</title>
+<link rel="icon" type="image/svg+xml" href="red-envelope-svgrepo-com.svg">
+  <!--
+  Vectors and icons by <a href="https://github.com/twitter/twemoji?ref=svgrepo.com" target="_blank">Twitter</a>
+  in MIT License via <a href="https://www.svgrepo.com/" target="_blank">SVG Repo</a>
+  -->
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+/* 引入粉圓體 */
+@font-face {
+  font-family: 'jf-openhuninn';
+  src: url('https://ymdd-image-tw.s3.ap-east-2.amazonaws.com/font/jf-openhuninn-2.1.ttf') format('truetype');
+}
+
+:root { 
+  --pink1:#FFE4EC; 
+  --pink2:#FF9BB3; 
+  --accent:#FF4D84; 
+}
+
+body { 
+  font-family: 'jf-openhuninn', "Noto Sans TC", system-ui, -apple-system, sans-serif; 
+  background: linear-gradient(180deg, var(--pink1), #fff);
+  margin: 0;
+  min-height: 100vh;
+}
+
+input, button {
+  font-family: inherit !important;
+}
+
+.main-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+
+/* 針對大標題優化，使用 clamp 確保縮放且不換行 */
+.main-header {
+  margin: 0 0 20px 0;
+  color: #b72b4b;
+  font-weight: bold;
+  text-align: center;
+  /* clamp(最小值, 響應值, 最大值) */
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
+  white-space: nowrap;
+}
+
+.btn-accent {
+  background-color: var(--accent);
+  transition: background 0.3s;
+}
+
+.btn-accent:hover:not(:disabled) {
+  background-color: #FF2B69;
+}
+
+.btn-accent:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.input-style {
+  border: 1px solid #eee;
+  transition: border-color 0.3s;
+}
+
+.input-style:focus {
+  border-color: var(--pink2);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--pink1);
+}
+
+.res-green { background-color: #f0fff4; color: #276749; border: 1px solid #c6f6d5; }
+.res-red { background-color: #fff5f5; color: #9b2c2c; border: 1px solid #fed7d7; }
+.res-yellow { background-color: #fffaf0; color: #9c4221; border: 1px solid #feebc8; }
+</style>
+</head>
+<body class="flex flex-col items-center justify-center p-4">
+
+  <h1 class="main-header">🎴 2025陽明牙醫雙北聯合尾牙 🎴</h1>
+
+  <div class="main-card p-8 w-full max-w-sm">
+    <h2 id="tableTitle" class="text-xl font-bold mb-6 text-center text-gray-700">載入中...</h2>
+
+    <div class="space-y-4">
+      <input id="name" placeholder="姓名" class="w-full p-3 rounded-lg input-style" type="text">
+      <input id="phone" placeholder="手機後四碼" class="w-full p-3 rounded-lg input-style" type="tel" maxlength="4">
+      <button id="submit" class="w-full btn-accent text-white font-bold py-3 rounded-lg">
+        送出報名
+      </button>
+    </div>
+
+    <p id="result" class="mt-4 p-3 rounded-lg text-center font-bold min-h-[3rem] text-sm hidden"></p>
+  </div>
+
+<script>
+// --- 設定區域 ---
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxdZOUi6axtwaJJY4wUhhUd6cVEAi8H7Z62Bw1n3Hdk3hYS6mTxmV9cMcXwBmW5SxqB/exec'; 
+
+const urlParams = new URLSearchParams(window.location.search);
+const tableNo = urlParams.get('table') || '未指定';
+document.getElementById('tableTitle').textContent = `第 ${tableNo} 桌報名登錄`;
+
+document.getElementById('submit').onclick = async () => {
+  const nameInput = document.getElementById('name');
+  const phoneInput = document.getElementById('phone');
+  const submitButton = document.getElementById('submit');
+
+  const name = nameInput.value.trim();
+  const phone = phoneInput.value.trim();
+
+  if (!name || !phone) {
+    showResult('請輸入姓名和手機後四碼。', 'red');
+    return;
+  }
+
+  submitButton.disabled = true;
+  submitButton.textContent = '送出中...';
+  showResult('資料送出中，請稍候...', 'yellow');
+
+  try {
+    const response = await fetch(GAS_WEB_APP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ table: tableNo, name, phone })
+    });
+
+    const res = await response.json();
+
+    if (res.success) {
+      showResult(res.message, 'green');
+      nameInput.value = '';
+      phoneInput.value = '';
+    } else {
+      showResult(res.message, 'red');
+    }
+  } catch (err) {
+    showResult('連線失敗，請檢查網路或 GAS 設定', 'red');
+    console.error(err);
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = '送出報名';
+  }
+};
+
+function showResult(text, color) {
+  const resultDiv = document.getElementById('result');
+  resultDiv.classList.remove('hidden', 'res-red', 'res-yellow', 'res-green');
+  
+  let colorClass = 'res-yellow';
+  if (color === 'red') colorClass = 'res-red';
+  if (color === 'green') colorClass = 'res-green';
+  
+  resultDiv.classList.add(colorClass);
+  resultDiv.textContent = text;
+}
+</script>
+</body>
+</html>

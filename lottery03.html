@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🧧 2025陽明牙醫聯合尾牙 🧧</title>
+<style>
+@font-face {
+  font-family: 'jf-openhuninn';
+  src: url('https://ymdd-image-tw.s3.ap-east-2.amazonaws.com/font/jf-openhuninn-2.1.ttf') format('truetype');
+}
+
+:root { 
+  --pink1:#FFE4EC; --pink2:#FF9BB3; --accent:#FF4D84; --gold: #f1c40f;
+}
+
+body { 
+  font-family: 'jf-openhuninn', "Noto Sans TC", sans-serif; 
+  background: linear-gradient(180deg, var(--pink1), #fff); 
+  margin: 0; padding: 10px; min-height: 100vh; box-sizing: border-box; 
+  overflow-x: hidden;
+}
+
+.container { 
+  max-width: 1400px; margin: 0 auto; background: rgba(255,255,255,0.96); 
+  border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); padding: 20px; 
+}
+
+.row { display: flex; gap: 30px; flex-wrap: wrap; }
+
+/* --- 左側控制面板 --- */
+.control { 
+  flex: 0 0 320px; max-width: 100%; background: #fffafa; padding: 25px;
+  border-radius: 15px; border: 1px solid var(--pink1); box-sizing: border-box;
+}
+.control h2 { color: var(--accent); font-size: 1.6rem; text-align: center; margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid var(--pink2); }
+.control-group { margin-bottom: 25px; }
+.control label { display: block; font-weight: 800; margin-bottom: 10px; color: #333; font-size: 1.1rem; }
+.control input[type="text"], .control input[type="number"] { padding: 15px; border-radius: 12px; border: 2px solid var(--pink1); width: 100%; box-sizing: border-box; font-family: inherit; font-size: 1.1rem; }
+
+.checkbox-group { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
+.checkbox-row { display: flex; align-items: center; font-weight: bold; font-size: 1.1rem; cursor: pointer; color: #444; }
+.checkbox-row input[type="checkbox"] { width: 24px; height: 24px; margin: 0 12px 0 0; cursor: pointer; accent-color: var(--accent); }
+
+#drawBtn { width: 100%; background: var(--accent); color: white; border: none; padding: 18px; border-radius: 12px; font-weight: 900; font-size: 1.5rem; cursor: pointer; box-shadow: 0 6px 0 #d43265; transition: all 0.1s; }
+#drawBtn:active { transform: translateY(4px); box-shadow: 0 2px 0 #d43265; }
+#refreshBtn { width:100%; margin-top:15px; background:none; border:1px solid #ccc; color:#666; padding:10px; border-radius:10px; cursor:pointer; font-weight:bold; }
+
+.current-winners-box { margin-top: 25px; padding: 15px; background: white; border: 2px dashed var(--pink2); border-radius: 12px; }
+
+/* --- 右側視覺區 --- */
+.visual { flex: 1; min-width: 0; text-align: center; }
+#cardsArea { min-height: 350px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; margin: 20px 0; }
+
+.card { width: clamp(100px, 15vw, 180px); height: clamp(140px, 22vw, 250px); perspective: 1000px; display: inline-flex; flex-shrink: 0; }
+.card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.card.flipped .card-inner { transform: rotateY(180deg); }
+.card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 15px rgba(0,0,0,0.1); border: 3px solid #fff; }
+.card-front { background: var(--pink2); color: #fff; font-size: 3rem; }
+.card-back { background: var(--accent); color: #fff; transform: rotateY(180deg); padding: 10px; text-align: center; white-space: pre-wrap; font-size: clamp(0.9rem, 1.5vw, 1.4rem); border: 3px solid var(--gold); word-break: break-all; overflow: hidden; }
+
+#resultArea { font-size: 2rem; font-weight: 800; color: var(--accent); min-height: 60px; margin-bottom: 15px; }
+
+/* --- 歷史紀錄與領獎狀態樣式 --- */
+.history-section { margin-top: 50px; border-top: 6px double var(--pink2); padding-top: 25px; }
+.history-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; justify-content: center; }
+.prize-group-card { background: white; border: 2px solid var(--pink2); border-radius: 15px; padding: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); max-width: 320px; }
+.prize-title { font-size: 1.4rem; color: #b72b4b; font-weight: 900; border-bottom: 2px solid var(--pink1); margin-bottom: 12px; text-align: center; }
+
+.history-item { 
+  display: flex; justify-content: space-between; align-items: center; 
+  padding: 10px 0; border-bottom: 1px dashed #eee; font-size: 1.1rem;
+  transition: all 0.3s ease; /* 讓變淡的效果更平滑 */
+}
+.history-item span { flex: 1; text-align: left; padding-right: 10px; color: #444; }
+
+/* 關鍵修正：已領獎的樣式 */
+.history-item.claimed span {
+  opacity: 0.4;
+  text-decoration: line-through;
+  color: #888;
+}
+.claim-box { width: 22px; height: 22px; flex-shrink: 0; cursor: pointer; accent-color: #4CAF50; }
+
+@media (max-width: 850px) {
+  .row { flex-direction: column; }
+  .control { border-right: none; flex: 1; width: 100%; }
+  .card { width: 90px; height: 130px; }
+  .history-grid { grid-template-columns: 1fr; }
+  .prize-group-card { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="row">
+    <div class="control">
+      <h2>⚙️ 抽獎控制</h2>
+      <div class="control-group"><label>🏆 設定目前獎項</label><input id="prize" type="text" placeholder="例如：頭獎 10萬"></div>
+      <div class="control-group"><label>👥 抽出人數</label><input id="count" type="number" min="1" value="1"></div>
+      <div class="checkbox-group">
+        <label class="checkbox-row"><input id="allowRepeat" type="checkbox"><span>允許重複中獎</span></label>
+        <label class="checkbox-row"><input id="twoStepReveal" type="checkbox"><span>啟用兩段式揭曉</span></label>
+      </div>
+      <button id="drawBtn">🔥 開始抽獎</button>
+      <button id="refreshBtn">🔄 同步中獎紀錄</button>
+      <div id="status" style="margin-top:15px; font-weight:bold; color:var(--accent); text-align:center;"></div>
+      <div id="countdown" style="text-align:center; color:#999; font-size:0.9rem; margin-top:5px;"></div>
+      <div class="current-winners-box">
+        <h3 style="margin:0 0 10px 0; font-size:1rem; color:#b72b4b; border-bottom:1px solid #eee; padding-bottom:5px;">🎯 本次中獎快報</h3>
+        <div id="currentWinners" style="font-size:1rem; line-height:1.6; color:#333;">尚未抽獎</div>
+      </div>
+    </div>
+
+    <div class="visual">
+      <h1 style="color: #b72b4b; margin: 0 0 20px 0;">🎴 2025陽明牙醫聯合尾牙 🎴</h1>
+      <div id="cardsArea"></div>
+      <div id="resultArea"></div>
+      <button id="revealNumberBtn" style="background:#5aa9e6; color:white; border:none; padding:18px 50px; border-radius:50px; font-size:1.8rem; font-weight:bold; cursor:pointer; display:none; margin:15px auto; box-shadow: 0 8px 25px rgba(90,169,230,0.4);">✨ 揭曉幸運兒 ✨</button>
+      <div class="history-section">
+        <h2 style="color:var(--accent); text-align:left; font-size:1.8rem; margin-bottom:20px;">📋 中獎紀錄</h2>
+        <div id="historyArea" class="history-grid">載入中…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ====== JavaScript 邏輯 ======
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwLJfHH_GFF790oDbJH-w4vkazm8iNCOM7nlFYklysjj8FcV0V8NCAHu85a6OsFHrwL/exec'; 
+
+const drawBtn = document.getElementById('drawBtn');
+const refreshBtn = document.getElementById('refreshBtn');
+const prizeInput = document.getElementById('prize');
+const countInput = document.getElementById('count');
+const allowRepeatInput = document.getElementById('allowRepeat');
+const statusDiv = document.getElementById('status');
+const cardsArea = document.getElementById('cardsArea');
+const resultArea = document.getElementById('resultArea');
+const currentWinnersDiv = document.getElementById('currentWinners');
+const historyArea = document.getElementById('historyArea');
+const countdownEl = document.getElementById('countdown');
+const twoStepRevealInput = document.getElementById('twoStepReveal');
+const revealNumberBtn = document.getElementById('revealNumberBtn');
+
+let currentWinnersData = []; 
+let lockTimer = null;
+
+async function callGAS(action, data = null) {
+  try {
+    const response = await fetch(GAS_WEB_APP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action, data })
+    });
+    return await response.json();
+  } catch (err) {
+    return { success: false, message: "網路連線失敗" };
+  }
+}
+
+function createCard() {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'card';
+  const inner = document.createElement('div');
+  inner.className = 'card-inner';
+  const front = document.createElement('div');
+  front.className = 'card-face card-front';
+  front.textContent = '🎴';
+  const back = document.createElement('div');
+  back.className = 'card-face card-back';
+  inner.appendChild(front);
+  inner.appendChild(back);
+  wrapper.appendChild(inner);
+  return { wrapper, inner, back };
+}
+
+async function loadHistory() {
+  historyArea.textContent = '讀取中…';
+  const res = await callGAS('list');
+  if (!res.success) {
+    historyArea.textContent = res.message || '載入失敗';
+    return;
+  }
+  const grouped = res.grouped || {};
+  const prizeOrder = res.prizeOrder || []; 
+  if (prizeOrder.length === 0) { 
+    historyArea.textContent = '目前尚無中獎紀錄';
+    return;
+  }
+  historyArea.innerHTML = '';
+  prizeOrder.forEach(prize => {
+    const box = document.createElement('div');
+    box.className = 'prize-group-card'; 
+    const title = document.createElement('div');
+    title.className = 'prize-title';
+    title.textContent = prize;
+    box.appendChild(title);
+
+    grouped[prize].forEach(item => {
+      const p = document.createElement('div');
+      // 修正：初始化時如果已經領獎，直接加上 claimed class
+      p.className = 'history-item' + (item.isClaimed ? ' claimed' : '');
+      
+      const txt = document.createElement('span');
+      txt.textContent = `${item.table}桌-${item.number} ${item.name}`;
+      
+      const chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.className = 'claim-box';
+      chk.checked = item.isClaimed;
+      chk.onchange = async () => {
+        chk.disabled = true;
+        // 修正：手動勾選時立即切換變淡效果
+        if (chk.checked) p.classList.add('claimed');
+        else p.classList.remove('claimed');
+
+        const upRes = await callGAS('updateClaimStatus', { time: item.time, name: item.name, isClaimed: chk.checked });
+        if(!upRes.success) { 
+          alert('更新失敗'); 
+          chk.checked = !chk.checked; 
+          p.classList.toggle('claimed');
+        }
+        chk.disabled = false;
+      };
+      
+      p.appendChild(txt);
+      p.appendChild(chk);
+      box.appendChild(p);
+    });
+    historyArea.appendChild(box);
+  });
+}
+
+drawBtn.addEventListener('click', async () => {
+  const prize = prizeInput.value.trim();
+  const count = parseInt(countInput.value, 10) || 1;
+  const allowRepeat = !!allowRepeatInput.checked;
+  const twoStep = !!twoStepRevealInput.checked; 
+  if (!prize) { alert('請輸入獎項名稱'); return; }
+  if (count <= 0) { alert('請輸入人數'); return; }
+  cardsArea.innerHTML = '';
+  resultArea.innerHTML = '';
+  currentWinnersDiv.textContent = '抽獎中...';
+  statusDiv.textContent = `正在抽 ${prize}...`;
+  drawBtn.disabled = true;
+  refreshBtn.disabled = true;
+  revealNumberBtn.style.display = 'none';
+
+  const res = await callGAS('draw', { prize, count, allowRepeat });
+  if (!res || !res.success) {
+    statusDiv.textContent = '抽獎失敗';
+    unlockWithCountdown(3);
+    return;
+  }
+
+  const winners = res.winners || [];
+  currentWinnersData = winners;
+  statusDiv.textContent = res.message;
+  currentWinnersDiv.innerHTML = '';
+  
+  const cards = [];
+  winners.forEach((w, idx) => {
+    const { wrapper, inner, back } = createCard();
+    cardsArea.appendChild(wrapper);
+    cards.push({ wrapper, inner, back });
+    const line = document.createElement('div');
+    line.textContent = twoStep ? `第${w.table}桌` : `第${w.table}桌-${w.number} ${w.name}`;
+    line.className = 'current-winner-line-' + idx;
+    currentWinnersDiv.appendChild(line);
+  });
+
+  winners.forEach((w, idx) => {
+    const card = cards[idx];
+    setTimeout(() => {
+      card.wrapper.classList.add('flipped');
+      card.back.textContent = twoStep ? `第${w.table}桌` : `${w.name}\n(${w.table}-${w.number})`; 
+      const p = document.createElement('div');
+      p.className = 'result-line-' + idx;
+      p.style.color = 'var(--accent)';
+      p.style.fontWeight = 'bold';
+      p.textContent = twoStep ? `第${w.table}桌` : `${w.table}-${w.number} ${w.name}`;
+      resultArea.appendChild(p);
+    }, 500 + idx * 700);
+  });
+
+  if (twoStep && winners.length > 0) {
+    setTimeout(() => { revealNumberBtn.style.display = 'block'; }, 600 + winners.length * 700);
+  } else {
+    setTimeout(() => { loadHistory(); unlockWithCountdown(3); }, 600 + winners.length * 700);
+  }
+});
+
+revealNumberBtn.addEventListener('click', () => {
+  if (currentWinnersData.length === 0) return;
+  revealNumberBtn.disabled = true;
+  currentWinnersData.forEach((w, idx) => {
+    setTimeout(() => {
+      const cardBack = document.querySelectorAll('.card-back')[idx];
+      if (cardBack) cardBack.textContent = `${w.name}\n(${w.table}-${w.number})`; 
+      const resLine = document.querySelector('.result-line-' + idx);
+      if (resLine) resLine.textContent = `${w.table}-${w.number} ${w.name}`;
+      const curLine = document.querySelector('.current-winner-line-' + idx);
+      if (curLine) curLine.textContent = `第${w.table}桌-${w.number} ${w.name}`;
+    }, idx * 500);
+  });
+  setTimeout(() => {
+    revealNumberBtn.style.display = 'none';
+    revealNumberBtn.disabled = false;
+    loadHistory(); 
+    unlockWithCountdown(3); 
+  }, currentWinnersData.length * 500 + 800);
+});
+
+refreshBtn.addEventListener('click', () => {
+  refreshBtn.disabled = true;
+  loadHistory();
+  setTimeout(()=> refreshBtn.disabled = false, 1000);
+});
+
+function unlockWithCountdown(sec) {
+  let t = sec;
+  countdownEl.style.display = 'inline-block';
+  countdownEl.textContent = `(冷卻 ${t}s)`;
+  if (lockTimer) clearInterval(lockTimer); 
+  lockTimer = setInterval(() => {
+    t--;
+    if (t <= 0) {
+      clearInterval(lockTimer);
+      countdownEl.style.display = 'none';
+      drawBtn.disabled = false;
+      refreshBtn.disabled = false;
+    } else {
+      countdownEl.textContent = `(冷卻 ${t}s)`;
+    }
+  }, 1000);
+}
+
+loadHistory();
+</script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2025 尾牙桌獎</title>
+<link rel="icon" type="image/svg+xml" href="red-envelope-svgrepo-com.svg">
+  <!--
+  Vectors and icons by <a href="https://github.com/twitter/twemoji?ref=svgrepo.com" target="_blank">Twitter</a>
+  in MIT License via <a href="https://www.svgrepo.com/" target="_blank">SVG Repo</a>
+  -->
+<style>
+  @font-face {
+    font-family: 'jf-openhuninn';
+    src: url('https://ymdd-image-tw.s3.ap-east-2.amazonaws.com/font/jf-openhuninn-2.1.ttf') format('truetype');
+  }
+
+  :root {
+    --primary-red: #c0392b; 
+    --secondary-gold: #f1c40f; 
+    --light-bg: #fefefe;
+  }
+
+  body {
+    font-family: 'jf-openhuninn', "Noto Sans TC", sans-serif;
+    background: var(--light-bg);
+    margin: 0; padding: 20px 10px; text-align: center;
+    background-image: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.8)),
+      url('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Chinese_lanterns_in_Beijing.jpg/800px-Chinese_lanterns_in_Beijing.jpg');
+    background-size: cover; background-attachment: fixed;
+  }
+
+  .main-wrapper { max-width: 1400px; margin: 0 auto; display: grid; gap: 20px; }
+  .card { background: #fff; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); padding: 20px; border: 4px solid var(--secondary-gold); box-sizing: border-box;}
+  
+  h1 { color: var(--primary-red); font-size: 1.5rem; margin-bottom: 15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+  label { display: block; text-align: left; margin: 10px 0 5px 0; font-weight: bold; font-size: 1rem; }
+  input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1.5px solid #ccc; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 1rem; }
+
+  .red-button {
+    background: var(--primary-red); color: white; border: none; border-radius: 8px;
+    padding: 12px; font-weight: bold; cursor: pointer; width: 100%; font-family: inherit; font-size: 1.1rem; transition: 0.2s;
+  }
+  .red-button:disabled { background: #ccc; }
+
+  /* 抽獎結果區 - 手機預設 */
+  .result-area { background: #fffdf8; border: 3px dashed var(--secondary-gold); border-radius: 15px; padding: 20px; min-height: 120px; margin: 15px 0; display: flex; flex-direction: column; justify-content: center; }
+  .highlight { font-size: 2.5rem; color: var(--primary-red); font-weight: 900; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .highlight span { background: white; padding: 5px 10px; border-radius: 10px; border: 1px solid #eee; }
+
+  .animating { animation: flash 0.1s infinite alternate; color: #e67e22; }
+  @keyframes flash { 0% { opacity: 1; } 100% { opacity: 0.7; } }
+
+  /* 歷史名單 - 手機預設 */
+  #historyList { text-align: left; font-size: 1rem; }
+  .history-group { margin-bottom: 15px; border-bottom: 2px solid var(--primary-red); padding-bottom: 10px; }
+  .prize-title { font-size: 1.2rem; color: var(--primary-red); margin-bottom: 5px; display: block; font-weight: 900; }
+  
+  .winner-tag {
+    display: inline-block; background: var(--secondary-gold); padding: 6px 12px;
+    border-radius: 6px; margin: 5px; font-weight: bold; cursor: pointer; transition: 0.3s;
+    font-size: 1.1rem; box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+  }
+  .winner-tag.claimed { background: #ddd !important; color: #888; text-decoration: line-through; box-shadow: none; }
+
+  .lock-toggle { cursor: pointer; font-size: 0.85rem; color: #888; text-decoration: underline; margin-left: 10px; font-weight: normal; }
+
+  /* ---------------------- 💻 桌機/投影增強模式 (寬度 >= 1000px) ---------------------- */
+  @media (min-width: 1000px) { 
+    .main-wrapper { grid-template-columns: 1fr 2fr; gap: 30px; } 
+    .card { padding: 40px; border-width: 6px; border-radius: 25px; }
+    h1 { font-size: 2.8rem; margin-bottom: 25px; }
+    label { font-size: 1.3rem; margin: 15px 0 10px 0; }
+    input { font-size: 1.3rem; padding: 15px; }
+    .red-button { font-size: 1.6rem; padding: 18px; border-radius: 12px; }
+    
+    .result-area { min-height: 220px; padding: 40px; border-width: 5px; }
+    .highlight { font-size: 6rem; gap: 25px; } /* 大螢幕字體極大化 */
+    .highlight span { padding: 10px 25px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+    
+    .prize-title { font-size: 2rem; margin-bottom: 15px; }
+    .winner-tag { font-size: 1.8rem; padding: 12px 24px; margin: 10px; border-radius: 12px; }
+    #historyList { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🧧 2025陽明牙醫聯合尾牙桌獎 🧧</h1>
+
+<div class="main-wrapper">
+    <div class="card">
+        <label>本次獎項</label>
+        <input type="text" id="prizeName" value="特獎" />
+        
+        <label>
+            號碼範圍 
+            <span id="unlockBtn" class="lock-toggle" onclick="toggleRangeLock()">🔓 手機解鎖修改</span>
+        </label>
+        <div style="display:flex; gap:10px;">
+            <input type="number" id="startNum" value="1" />
+            <span style="line-height: 50px;">~</span>
+            <input type="number" id="endNum" value="100" />
+        </div>
+        
+        <label>抽出人數</label>
+        <input type="number" id="count" value="1" />
+        
+        <button class="red-button" id="drawBtn" onclick="draw()">🔥 開始抽獎 🔥</button>
+        <button class="red-button" style="background:#666; margin-top:15px; font-size: 0.9rem; padding: 8px;" onclick="location.reload()">🔄 同步領獎狀態</button>
+    </div>
+
+    <div class="card">
+        <div class="result-area" id="result">
+            <p style="font-size: 1.5rem; color: #b72b4b;">🎉 祝大家中大獎 🎉</p>
+        </div>
+        
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+            <h3 style="color:var(--primary-red); font-size: 1.5rem; margin: 0;">📋 歷史名單</h3>
+            <span style="font-size: 0.8rem; color: #888;">* 點擊號碼標記領獎</span>
+        </div>
+        <hr style="border: 1px solid var(--secondary-gold); margin: 10px 0 15px 0;">
+        <div id="historyList">載入中...</div>
+    </div>
+</div>
+
+<script>
+  // 🚨 請替換成您的 GAS 網址 🚨
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbwLB5fXJIyZCaxB9oJr59e4B-TwDdm_G40hA_00y_XOWfthTM8XV7YJUZ_4C8B7fEKTWg/exec'; 
+
+  let allDrawnSet = new Set();
+  let isRangeLocked = false;
+
+  async function callGAS(action, data = {}) {
+    const resp = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action, data }) });
+    return await resp.json();
+  }
+
+  function toggleRangeLock() {
+    isRangeLocked = !isRangeLocked;
+    document.getElementById("startNum").disabled = isRangeLocked;
+    document.getElementById("endNum").disabled = isRangeLocked;
+    document.getElementById("unlockBtn").textContent = isRangeLocked ? "🔓 點擊解鎖修改" : "🔒 範圍已開放";
+  }
+
+  async function loadHistory() {
+    const res = await callGAS('getHistory');
+    renderHistory(res.history || []);
+  }
+
+  function renderHistory(data) {
+    const list = document.getElementById("historyList");
+    list.innerHTML = "";
+    allDrawnSet.clear();
+    
+    const groups = {};
+    const groupOrder = []; 
+    
+    data.forEach(row => {
+      const [uid, time, prize, num, status] = row;
+      if (!groups[prize]) {
+        groups[prize] = [];
+        groupOrder.push(prize);
+      }
+      groups[prize].push({ uid, num, status });
+      allDrawnSet.add(parseInt(num, 10));
+    });
+
+    groupOrder.reverse().forEach(prize => {
+      const div = document.createElement('div');
+      div.className = 'history-group';
+      div.innerHTML = `<span class="prize-title">🏆 ${prize}</span>`;
+      const tagsDiv = document.createElement('div');
+      groups[prize].sort((a, b) => parseInt(a.num) - parseInt(b.num));
+      groups[prize].forEach(item => {
+        const span = document.createElement('span');
+        span.className = `winner-tag ${item.status === '已領獎' ? 'claimed' : ''}`;
+        span.textContent = item.num;
+        span.onclick = () => toggleClaim(item.uid, span);
+        tagsDiv.appendChild(span);
+      });
+      div.appendChild(tagsDiv);
+      list.appendChild(div);
+    });
+
+    if (allDrawnSet.size > 0 && !isRangeLocked) {
+        isRangeLocked = true;
+        document.getElementById("startNum").disabled = true;
+        document.getElementById("endNum").disabled = true;
+        document.getElementById("unlockBtn").textContent = "🔓 點擊解鎖修改";
+    }
+  }
+
+  async function toggleClaim(uid, element) {
+    element.style.opacity = "0.5";
+    const res = await callGAS('toggleClaim', { uid });
+    if (res.success) {
+      element.classList.toggle('claimed', res.newStatus === '已領獎');
+      element.style.opacity = "1";
+    }
+  }
+
+  function draw() {
+    const prize = document.getElementById("prizeName").value;
+    const start = parseInt(document.getElementById("startNum").value);
+    const end = parseInt(document.getElementById("endNum").value);
+    const count = parseInt(document.getElementById("count").value);
+
+    if (isNaN(start) || isNaN(end) || isNaN(count)) return alert("請輸入正確數字！");
+    const pool = [];
+    for (let i = start; i <= end; i++) { if (!allDrawnSet.has(i)) pool.push(i); }
+    if (pool.length < count) return alert("剩餘可用號碼不足！");
+
+    document.getElementById("drawBtn").disabled = true;
+    const resDiv = document.getElementById("result");
+    resDiv.innerHTML = `<div class="highlight animating" id="animBox"></div>`;
+    
+    let ticks = 0;
+    const timer = setInterval(() => {
+      const temp = [...pool].sort(() => Math.random() - 0.5).slice(0, count);
+      temp.sort((a,b) => a-b);
+      document.getElementById("animBox").innerHTML = temp.map(n => `<span>${n}</span>`).join("");
+      if (++ticks > 25) {
+        clearInterval(timer);
+        finalize(pool, count, prize);
+      }
+    }, 80);
+  }
+
+  async function finalize(pool, count, prize) {
+    const selected = pool.sort(() => Math.random() - 0.5).slice(0, count).sort((a,b) => a-b);
+    document.getElementById("result").innerHTML = `
+      <p style="font-size: 1.2rem; margin-bottom: 10px; color: #444;">恭喜得獎者！</p>
+      <div class="highlight">${selected.map(n => `<span>${n}</span>`).join("")}</div>
+    `;
+    await callGAS('recordDraw', { prize, winners: selected, count });
+    document.getElementById("drawBtn").disabled = false;
+    loadHistory();
+  }
+
+  loadHistory();
+</script>
+</body>
+</html>
