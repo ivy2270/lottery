@@ -5,10 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>2025陽明牙醫聯合尾牙</title>
 <link rel="icon" type="image/svg+xml" href="red-envelope-svgrepo-com.svg">
-  <!--
-  Vectors and icons by <a href="https://github.com/twitter/twemoji?ref=svgrepo.com" target="_blank">Twitter</a>
-  in MIT License via <a href="https://www.svgrepo.com/" target="_blank">SVG Repo</a>
-  -->
 <style>
 @font-face {
   font-family: 'jf-openhuninn';
@@ -75,11 +71,10 @@ body {
 .history-item { 
   display: flex; justify-content: space-between; align-items: center; 
   padding: 10px 0; border-bottom: 1px dashed #eee; font-size: 1.1rem;
-  transition: all 0.3s ease; /* 讓變淡的效果更平滑 */
+  transition: all 0.3s ease; 
 }
 .history-item span { flex: 1; text-align: left; padding-right: 10px; color: #444; }
 
-/* 關鍵修正：已領獎的樣式 */
 .history-item.claimed span {
   opacity: 0.4;
   text-decoration: line-through;
@@ -202,9 +197,16 @@ async function loadHistory() {
     title.textContent = prize;
     box.appendChild(title);
 
-    grouped[prize].forEach(item => {
+    // --- 關鍵排序邏輯：針對同一獎項內的得獎者依「桌號」及「編號」排序 ---
+    const sortedItems = [...grouped[prize]].sort((a, b) => {
+      if (parseInt(a.table) !== parseInt(b.table)) {
+        return parseInt(a.table) - parseInt(b.table);
+      }
+      return parseInt(a.number) - parseInt(b.number);
+    });
+
+    sortedItems.forEach(item => {
       const p = document.createElement('div');
-      // 修正：初始化時如果已經領獎，直接加上 claimed class
       p.className = 'history-item' + (item.isClaimed ? ' claimed' : '');
       
       const txt = document.createElement('span');
@@ -216,7 +218,6 @@ async function loadHistory() {
       chk.checked = item.isClaimed;
       chk.onchange = async () => {
         chk.disabled = true;
-        // 修正：手動勾選時立即切換變淡效果
         if (chk.checked) p.classList.add('claimed');
         else p.classList.remove('claimed');
 
@@ -345,4 +346,3 @@ loadHistory();
 </script>
 </body>
 </html>
-
